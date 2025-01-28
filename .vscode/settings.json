@@ -85,5 +85,8 @@
     "ds18b20_types.h": "c",
     "unordered_set": "cpp",
     "adc_cali_scheme.h": "c"
-  }
+  },
+  "idf.espIdfPath": "/Users/joi/esp/v5.3.2/esp-idf",
+  "idf.toolsPath": "/Users/joi/.espressif",
+  "idf.port": "/dev/tty.usbmodem101"
 }

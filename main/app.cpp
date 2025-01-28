@@ -24,7 +24,8 @@ void App::init()
                           {
                             data.erase(std::remove(data.begin(), data.end(), '\r'), data.end());
                             data.erase(std::remove(data.begin(), data.end(), '\n'), data.end());
-                            lora->sendPacket((uint8_t *)data.data(), data.length()); });
+                            // lora->sendPacket((uint8_t *)data.data(), data.length());
+                          });
 }
 
 void App::run()
@@ -33,19 +34,7 @@ void App::run()
   {
     ESP_LOGD(TAGAPP, "App loop ...");
 
-    auto channels = adc->readAll();
-    for (auto channel : channels)
-    {
-      ESP_LOGI(TAGAPP, "ADC channel %d measured %dmV", channel.first, channel.second);
-    }
-
-    for (auto sensor : onewire->getDS18B20s())
-    {
-      auto result = sensor->readTemperature();
-      ESP_LOGI(TAGAPP, "DS18B20 [%016llX] Temperature %.2f", result.address, result.temp);
-    }
-
-    uart->sendString(std::string("Test"));
-    vTaskDelay(pdMS_TO_TICKS(5000));
+    // uart->sendString(std::string("Test"));
+    vTaskDelay(pdMS_TO_TICKS(2000));
   }
 }
