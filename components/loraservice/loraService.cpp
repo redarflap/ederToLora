@@ -508,9 +508,9 @@ int LoraService::init(void)
  * @param buf Data to be sent
  * @param size Size of data.
  */
-void LoraService::sendPacket(uint8_t *buf, int size)
+void LoraService::sendPacket(std::vector<uint8_t> buffer)
 {
-  ESP_LOGI(TAGLORA, "Sending packet: %s", reinterpret_cast<const char *>(buf));
+  ESP_LOGI(TAGLORA, "Sending packet: %s", reinterpret_cast<const char *>(buffer.data()));
 
   /*
    * Transfer data to radio.
@@ -519,13 +519,13 @@ void LoraService::sendPacket(uint8_t *buf, int size)
   writeReg(REG_FIFO_ADDR_PTR, 0);
 
 #if BUFFER_IO
-  writeRegBuffer(REG_FIFO, buf, size);
+  writeRegBuffer(REG_FIFO, buffer.data(), buffer.size());
 #else
   for (int i = 0; i < size; i++)
     writeReg(REG_FIFO, *buf++);
 #endif
 
-  writeReg(REG_PAYLOAD_LENGTH, size);
+  writeReg(REG_PAYLOAD_LENGTH, buffer.size());
 
   /*
    * Start transmission and wait for conclusion.

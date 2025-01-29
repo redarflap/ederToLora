@@ -67,7 +67,7 @@ public:
   void close(void);
   int init(void);
   int isInitialized(void);
-  void sendPacket(uint8_t *buf, int size);
+  void sendPacket(std::vector<uint8_t> buffer);
   int receivePacket(uint8_t *buf, int size);
   bool hasPacket(void);
 

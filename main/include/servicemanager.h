@@ -42,27 +42,13 @@ public:
             .bandwith = 7,
             .spreadingFactor = 7,
         });
-    std::vector<gpio_num_t> onewireGpio = {GPIO_NUM_1, GPIO_NUM_33, GPIO_NUM_38};
-    onewire = std::make_shared<OneWireService>(onewireGpio);
+
+    // std::vector<gpio_num_t> onewireGpio = {GPIO_NUM_1, GPIO_NUM_33, GPIO_NUM_38};
+    // onewire = std::make_shared<OneWireService>(onewireGpio);
 
     std::vector<AdcChannelConfig> channels = {
         AdcChannelConfig{
             .id = ADC_CHANNEL_1,
-            .attenuation = ADC_ATTEN_DB_12,
-            .fallbackVref = 1100,
-        },
-        AdcChannelConfig{
-            .id = ADC_CHANNEL_2,
-            .attenuation = ADC_ATTEN_DB_12,
-            .fallbackVref = 1100,
-        },
-        AdcChannelConfig{
-            .id = ADC_CHANNEL_6,
-            .attenuation = ADC_ATTEN_DB_12,
-            .fallbackVref = 1100,
-        },
-        AdcChannelConfig{
-            .id = ADC_CHANNEL_9,
             .attenuation = ADC_ATTEN_DB_12,
             .fallbackVref = 1100,
         },
@@ -76,8 +62,8 @@ public:
       uart->init();
     if (lora.get())
       lora->init();
-    if (onewire.get())
-      onewire->init();
+    // if (onewire.get())
+    //   onewire->init();
     if (adc.get())
       adc->init();
   }
