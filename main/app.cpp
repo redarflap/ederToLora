@@ -20,12 +20,44 @@ void App::init()
   adc = svm.getAdc();
 
   // onewire->searchDevices();
+
+  bool dataStarted = false;
+  bool dataComplete = false;
+  std::string ederData;
   uart->setReceiveHandler([&](std::string data)
                           {
-                            data.erase(std::remove(data.begin(), data.end(), '\r'), data.end());
-                            data.erase(std::remove(data.begin(), data.end(), '\n'), data.end());
+                            if (data.starts_with("\r\n"))
+                            {
+                              if (!dataStarted)
+                              {
+                                dataStarted = true;
+                                ederData.clear();
+                                ESP_LOGI("EDER", "Data started");
+                                return;
+                              }
+
+                              ESP_LOGI("EDER", "Data complete");
+                              dataStarted = false;
+                              dataComplete = true;
+                              return;
+                            }
+
+                            if (dataStarted)
+                            {
+                              data.erase(std::remove(data.begin(), data.end(), '\r'), data.end());
+                              data.erase(std::remove(data.begin(), data.end(), '\n'), data.end());
+                              ederData.append(data);
+                            }
+
                             // lora->sendPacket((uint8_t *)data.data());
                           });
+
+  while (!dataComplete)
+  {
+    vTaskDelay(pdMS_TO_TICKS(5));
+  }
+
+  ESP_LOGI("EDER", "%s", ederData.data());
 
   std::vector<uint8_t> buffer;
   uint8_t mac[8] = {0};
@@ -40,18 +72,23 @@ void App::init()
   buffer.push_back(battery & 0xFF);
   buffer.push_back(battery >> 8 & 0xFF);
 
-  // lora->sendPacket(buffer);
+  for (auto byte : ederData)
+  {
+    buffer.push_back(byte);
+  }
 
-  // esp_deep_sleep(10000000);
+  lora->sendPacket(buffer);
+
+  esp_deep_sleep(20000000);
 }
 
 void App::run()
 {
-  while (1)
-  {
-    ESP_LOGD(TAGAPP, "App loop ...");
+  // while (1)
+  // {
+  //   ESP_LOGD(TAGAPP, "App loop ...");
 
-    // uart->sendString(std::string("Test"));
-    vTaskDelay(pdMS_TO_TICKS(30000));
-  }
+  //   // uart->sendString(std::string("Test"));
+  //   vTaskDelay(pdMS_TO_TICKS(30000));
+  // }
 }
