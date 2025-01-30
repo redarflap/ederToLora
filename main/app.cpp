@@ -35,6 +35,7 @@ void App::init()
                             if (data.size() == 192)
                             {
                               eder->updateFromBuffer(data);
+                              eder->print();
                             } });
 
   int timeout = 3000;
@@ -65,7 +66,7 @@ void App::init()
   buffer.push_back(battery & 0xFF);
   buffer.push_back(battery >> 8 & 0xFF);
 
-  auto ederData = eder->toBytes();
+  auto ederData = eder->serializeBytes();
   buffer.insert(buffer.end(), ederData.begin(), ederData.end());
 
   // ESP_LOGI("EDER", "%s", buffer.data());
@@ -73,7 +74,7 @@ void App::init()
 
   lora->sendPacket(buffer);
 
-  esp_deep_sleep(20000000);
+  esp_deep_sleep(30000000);
 }
 
 void App::run()
