@@ -10,6 +10,10 @@
 #include <esp_adc_cal_types_legacy.h>
 #include <esp_adc_cal.h>
 #include <driver/adc.h>
+#include "ederbuffer.h"
+
+// Initialize the static member
+EderBuffer *EderBuffer::instance = nullptr;
 
 void App::init()
 {
@@ -19,46 +23,35 @@ void App::init()
   // onewire = svm.getOneWire();
   adc = svm.getAdc();
 
+  auto eder = EderBuffer::getInstance();
+
   // onewire->searchDevices();
 
-  bool dataStarted = false;
-  bool dataComplete = false;
-  std::string ederData;
-  uart->setReceiveHandler([&](std::string data)
+  // eder = "29.01.25;11:42:16;1.95;65;65;;30.7;;748;52;;;0.002;0.084;;;0;;0;0;0;0;0;;;;;;;;;;;00000000 00000000 00000000;;1;";
+  // dataComplete = true;
+
+  uart->setReceiveHandler([&](std::vector<uint8_t> data)
                           {
-                            if (data.starts_with("\r\n"))
+                            if (data.size() == 192)
                             {
-                              if (!dataStarted)
-                              {
-                                dataStarted = true;
-                                ederData.clear();
-                                ESP_LOGI("EDER", "Data started");
-                                return;
-                              }
+                              eder->updateFromBuffer(data);
+                            } });
 
-                              ESP_LOGI("EDER", "Data complete");
-                              dataStarted = false;
-                              dataComplete = true;
-                              return;
-                            }
-
-                            if (dataStarted)
-                            {
-                              data.erase(std::remove(data.begin(), data.end(), '\r'), data.end());
-                              data.erase(std::remove(data.begin(), data.end(), '\n'), data.end());
-                              ederData.append(data);
-                            }
-
-                            // lora->sendPacket((uint8_t *)data.data());
-                          });
-
-  while (!dataComplete)
+  int timeout = 3000;
+  while (!eder->hasNewData())
   {
-    vTaskDelay(pdMS_TO_TICKS(5));
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    timeout -= 10;
+    if (timeout <= 0)
+    {
+      ESP_LOGW("EDER", "Timeout waiting for EDER data");
+      vTaskDelay(pdMS_TO_TICKS(1000));
+      (esp_deep_sleep(20000000));
+    }
   }
 
-  ESP_LOGI("EDER", "%s", ederData.data());
-
+  // Prepare LoRa buffer for sending
   std::vector<uint8_t> buffer;
   uint8_t mac[8] = {0};
 
@@ -72,10 +65,11 @@ void App::init()
   buffer.push_back(battery & 0xFF);
   buffer.push_back(battery >> 8 & 0xFF);
 
-  for (auto byte : ederData)
-  {
-    buffer.push_back(byte);
-  }
+  auto ederData = eder->toBytes();
+  buffer.insert(buffer.end(), ederData.begin(), ederData.end());
+
+  // ESP_LOGI("EDER", "%s", buffer.data());
+  // vTaskDelay(pdMS_TO_TICKS(5000));
 
   lora->sendPacket(buffer);
 

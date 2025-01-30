@@ -22,7 +22,7 @@ private:
 
   static void onEvent(void *pvParameters);
 
-  using OnReceiveHandler = std::function<void(std::string data)>;
+  using OnReceiveHandler = std::function<void(std::vector<uint8_t> data)>;
   OnReceiveHandler onReceive;
 
 public:

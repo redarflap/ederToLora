@@ -19,12 +19,12 @@ public:
         .gpioTx = GPIO_NUM_18,
         .gpioRx = GPIO_NUM_17,
         .uartConfig = uart_config_t{
-            .baud_rate = 9600,
+            .baud_rate = 38400,
             .data_bits = UART_DATA_8_BITS,
             .parity = UART_PARITY_DISABLE,
             .stop_bits = UART_STOP_BITS_1,
             .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
-            .rx_flow_ctrl_thresh = 122,
+            .rx_flow_ctrl_thresh = 0,
         }}
 
     );

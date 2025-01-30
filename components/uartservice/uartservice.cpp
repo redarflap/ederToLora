@@ -38,7 +38,7 @@ void UartService::onEvent(void *pvParameters)
   UartService *instance = static_cast<UartService *>(pvParameters);
 
   uart_event_t event;
-  uint8_t data[128];
+  uint8_t data[1024];
 
   while (1)
   {
@@ -54,12 +54,12 @@ void UartService::onEvent(void *pvParameters)
         int length = uart_read_bytes(instance->config.uartPort, data, event.size, pdMS_TO_TICKS(100));
         if (length > 0)
         {
-          std::string text(reinterpret_cast<char *>(data), length);
-          ESP_LOGD(TAGUART, "Received text: %s", text.c_str());
+          ESP_LOGD(TAGUART, "Received size %d", length);
           if (instance->onReceive)
           {
+            std::vector buffer(data, data + length);
             ESP_LOGD(TAGUART, "Calling onReceive handler");
-            instance->onReceive(text);
+            instance->onReceive(buffer);
           }
         }
         break;
