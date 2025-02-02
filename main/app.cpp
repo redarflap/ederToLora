@@ -24,6 +24,7 @@ void App::init()
   adc = svm.getAdc();
 
   auto eder = EderBuffer::getInstance();
+  std::vector<uint8_t> rcvBuffer = {};
 
   // onewire->searchDevices();
 
@@ -32,10 +33,15 @@ void App::init()
 
   uart->setReceiveHandler([&](std::vector<uint8_t> data)
                           {
-                            if (data.size() == 192)
+                            if (rcvBuffer.size() < 192) {
+                              rcvBuffer.insert(rcvBuffer.end(), data.begin(), data.end());
+                            }
+
+                            if (rcvBuffer.size() == 192)
                             {
-                              eder->updateFromBuffer(data);
+                              eder->updateFromBuffer(rcvBuffer);
                               eder->print();
+                              rcvBuffer.clear();
                             } });
 
   int timeout = 3000;
@@ -73,8 +79,9 @@ void App::init()
   // vTaskDelay(pdMS_TO_TICKS(5000));
 
   lora->sendPacket(buffer);
+  vTaskDelay(pdMS_TO_TICKS(100));
 
-  esp_deep_sleep(30000000);
+  esp_deep_sleep(31000000);
 }
 
 void App::run()
