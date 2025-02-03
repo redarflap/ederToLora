@@ -53,12 +53,10 @@ void App::init()
 
   // onewire->searchDevices();
 
-  // eder = "29.01.25;11:42:16;1.95;65;65;;30.7;;748;52;;;0.002;0.084;;;0;;0;0;0;0;0;;;;;;;;;;;00000000 00000000 00000000;;1;";
-  // dataComplete = true;
-
   uart->setReceiveHandler([&](std::vector<uint8_t> data)
                           {
-                            if (rcvBuffer.size() < 192) {
+                            if (rcvBuffer.size() < 192)
+                            {
                               rcvBuffer.insert(rcvBuffer.end(), data.begin(), data.end());
                             }
 
@@ -66,6 +64,11 @@ void App::init()
                             {
                               eder->updateFromBuffer(rcvBuffer);
                               eder->print();
+                            }
+
+                            if (rcvBuffer.size() >= 192)
+                            {
+                              rcvBuffer.clear();
                             } });
 }
 
