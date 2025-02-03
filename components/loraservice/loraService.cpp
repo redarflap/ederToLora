@@ -510,7 +510,7 @@ int LoraService::init(void)
  */
 void LoraService::sendPacket(std::vector<uint8_t> buffer)
 {
-  ESP_LOGI(TAGLORA, "Sending packet: %s", reinterpret_cast<const char *>(buffer.data()));
+  ESP_LOGI(TAGLORA, "Sending packet: size %d", buffer.size());
 
   /*
    * Transfer data to radio.

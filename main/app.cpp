@@ -49,6 +49,7 @@ void App::init()
   adc = svm.getAdc();
 
   auto eder = EderBuffer::getInstance();
+  std::vector<uint8_t> rcvBuffer = {};
 
   // onewire->searchDevices();
 
@@ -57,9 +58,13 @@ void App::init()
 
   uart->setReceiveHandler([&](std::vector<uint8_t> data)
                           {
-                            if (data.size() == 192)
+                            if (rcvBuffer.size() < 192) {
+                              rcvBuffer.insert(rcvBuffer.end(), data.begin(), data.end());
+                            }
+
+                            if (rcvBuffer.size() == 192)
                             {
-                              eder->updateFromBuffer(data);
+                              eder->updateFromBuffer(rcvBuffer);
                               eder->print();
                             } });
 }
