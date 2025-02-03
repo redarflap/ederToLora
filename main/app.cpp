@@ -47,6 +47,11 @@ void App::init()
   uart = svm.getUart();
   // onewire = svm.getOneWire();
   adc = svm.getAdc();
+}
+
+void App::run()
+{
+  auto lastSent = getTimeMS() - 30000;
 
   auto eder = EderBuffer::getInstance();
   std::vector<uint8_t> rcvBuffer = {};
@@ -57,37 +62,33 @@ void App::init()
                           {
                             if (rcvBuffer.size() < 192)
                             {
+                              ESP_LOGD("EDER", "Received UART data. Adding to buffer, size: %d", rcvBuffer.size());
                               rcvBuffer.insert(rcvBuffer.end(), data.begin(), data.end());
                             }
 
                             if (rcvBuffer.size() == 192)
                             {
+                              ESP_LOGD("EDER", "UART data complete, parsing data");
                               eder->updateFromBuffer(rcvBuffer);
-                              eder->print();
+                              //eder->print();
                             }
 
-                            if (rcvBuffer.size() >= 192)
-                            {
+                            if (rcvBuffer.size() >= 192 || (data.size() == 72 && rcvBuffer.size() == 0)) {
+                              ESP_LOGD("EDER", "Clearing temp rcv buffer.");
                               rcvBuffer.clear();
                             } });
-}
-
-void App::run()
-{
-  auto lastSent = getTimeMS() - 30000;
-
-  auto eder = EderBuffer::getInstance();
   while (1)
   {
     auto timeSinceSent = getTimeMS() - lastSent;
 
     if (eder->hasCriticalDataChanged() || (eder->hasNewData() && timeSinceSent > 30000))
     {
+      ESP_LOGD("EDER", "Sending data via Lora");
       sendLora();
       lastSent = getTimeMS();
     }
 
-    if (timeSinceSent > 120000)
+    if (timeSinceSent > 60000)
     {
       ESP_LOGW("EDER", "Timeout waiting for EDER data");
       vTaskDelay(pdMS_TO_TICKS(1000));
