@@ -13,6 +13,9 @@ static constexpr const char *TAGAPP = "APP";
 class App
 {
 private:
+  uint32_t getTimeMS();
+  void sendLora();
+
   std::shared_ptr<UartService> uart;
   std::shared_ptr<LoraService> lora;
   std::shared_ptr<OneWireService> onewire;

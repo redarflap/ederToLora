@@ -145,7 +145,7 @@ public:
     data.degassingSeconds = getUint32(buffer, 88);
 
     hasData = true;
-    criticalDataChanged = previousData.refillActive != data.refillActive || previousData.pump1Active != data.pump1Active;
+    criticalDataChanged = previousData.refillActive != data.refillActive || previousData.pump1Active != data.pump1Active || previousData.errorActive != data.errorActive;
   }
 
   // Convert struct to buffer

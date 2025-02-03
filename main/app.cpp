@@ -15,6 +15,31 @@
 // Initialize the static member
 EderBuffer *EderBuffer::instance = nullptr;
 
+void App::sendLora()
+{
+
+  // Prepare LoRa buffer for sending
+  std::vector<uint8_t> buffer;
+  uint8_t mac[8] = {0};
+
+  esp_efuse_mac_get_default(mac);
+  for (auto val : mac)
+  {
+    buffer.push_back(val);
+  }
+
+  auto battery = (int)(adc->readChannel(ADC_CHANNEL_1) * 3.76);
+  buffer.push_back(battery & 0xFF);
+  buffer.push_back(battery >> 8 & 0xFF);
+
+  auto eder = EderBuffer::getInstance()->serializeBytes();
+  buffer.insert(buffer.end(), eder.begin(), eder.end());
+
+  lora->idle();
+  lora->sendPacket(buffer);
+  lora->sleep();
+}
+
 void App::init()
 {
   auto &svm = ServiceManager::getInstance();
@@ -37,53 +62,37 @@ void App::init()
                               eder->updateFromBuffer(data);
                               eder->print();
                             } });
-
-  int timeout = 3000;
-  while (!eder->hasNewData())
-  {
-    vTaskDelay(pdMS_TO_TICKS(10));
-
-    timeout -= 10;
-    if (timeout <= 0)
-    {
-      ESP_LOGW("EDER", "Timeout waiting for EDER data");
-      vTaskDelay(pdMS_TO_TICKS(1000));
-      (esp_deep_sleep(20000000));
-    }
-  }
-
-  // Prepare LoRa buffer for sending
-  std::vector<uint8_t> buffer;
-  uint8_t mac[8] = {0};
-
-  esp_efuse_mac_get_default(mac);
-  for (auto val : mac)
-  {
-    buffer.push_back(val);
-  }
-
-  auto battery = (int)(adc->readChannel(ADC_CHANNEL_1) * 3.76);
-  buffer.push_back(battery & 0xFF);
-  buffer.push_back(battery >> 8 & 0xFF);
-
-  auto ederData = eder->serializeBytes();
-  buffer.insert(buffer.end(), ederData.begin(), ederData.end());
-
-  // ESP_LOGI("EDER", "%s", buffer.data());
-  // vTaskDelay(pdMS_TO_TICKS(5000));
-
-  lora->sendPacket(buffer);
-
-  esp_deep_sleep(30000000);
 }
 
 void App::run()
 {
-  // while (1)
-  // {
-  //   ESP_LOGD(TAGAPP, "App loop ...");
+  auto lastSent = getTimeMS() - 30000;
 
-  //   // uart->sendString(std::string("Test"));
-  //   vTaskDelay(pdMS_TO_TICKS(30000));
-  // }
+  auto eder = EderBuffer::getInstance();
+  while (1)
+  {
+    auto timeSinceSent = getTimeMS() - lastSent;
+
+    if (eder->hasCriticalDataChanged() || (eder->hasNewData() && timeSinceSent > 30000))
+    {
+      sendLora();
+      lastSent = getTimeMS();
+    }
+
+    if (timeSinceSent > 120000)
+    {
+      ESP_LOGW("EDER", "Timeout waiting for EDER data");
+      vTaskDelay(pdMS_TO_TICKS(1000));
+      (esp_deep_sleep(30000000));
+    }
+
+    ESP_LOGD(TAGAPP, "App loop ...");
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+  }
+}
+
+uint32_t App::getTimeMS()
+{
+  return xTaskGetTickCount() * portTICK_PERIOD_MS;
 }

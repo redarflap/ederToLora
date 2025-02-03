@@ -42,7 +42,6 @@ private:
   void reset(void);
   void explicitHeaderMode(void);
   void implicitHeaderMode(int size);
-  void idle(void);
 
   void receive(void);
   int getIrq(void);
@@ -64,6 +63,7 @@ public:
   ~LoraService();
 
   void sleep(void);
+  void idle(void);
   void close(void);
   int init(void);
   int isInitialized(void);
