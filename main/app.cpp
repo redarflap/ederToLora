@@ -28,9 +28,9 @@ void App::sendLora()
     buffer.push_back(val);
   }
 
-  auto battery = (int)(adc->readChannel(ADC_CHANNEL_1) * 3.76);
-  buffer.push_back(battery & 0xFF);
-  buffer.push_back(battery >> 8 & 0xFF);
+  // auto battery = (int)(adc->readChannel(ADC_CHANNEL_1) * 3.76);
+  // buffer.push_back(battery & 0xFF);
+  // buffer.push_back(battery >> 8 & 0xFF);
 
   auto eder = EderBuffer::getInstance()->serializeBytes();
   buffer.insert(buffer.end(), eder.begin(), eder.end());
