@@ -64,13 +64,14 @@ void App::run()
                             {
                               ESP_LOGD("EDER", "Received UART data. Adding to buffer, size: %d", rcvBuffer.size());
                               rcvBuffer.insert(rcvBuffer.end(), data.begin(), data.end());
+                              
                             }
 
                             if (rcvBuffer.size() == 192)
                             {
                               ESP_LOGD("EDER", "UART data complete, parsing data");
                               eder->updateFromBuffer(rcvBuffer);
-                              //eder->print();
+                              eder->print();
                             }
 
                             if (rcvBuffer.size() >= 192 || (data.size() == 72 && rcvBuffer.size() == 0)) {
@@ -96,6 +97,8 @@ void App::run()
     }
 
     ESP_LOGD(TAGAPP, "App loop ...");
+
+    // uart->sendString("Test");
 
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
