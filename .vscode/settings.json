@@ -88,5 +88,5 @@
   },
   "idf.espIdfPath": "/Users/joi/esp/v5.3.2/esp-idf",
   "idf.toolsPath": "/Users/joi/.espressif",
-  "idf.port": "/dev/tty.usbmodem101"
+  "idf.port": "/dev/tty.usbmodem1101"
 }

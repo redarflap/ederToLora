@@ -186,25 +186,25 @@ public:
 
   void print()
   {
-    ESP_LOGI("EDER", "Warning: %d", data.warningActive);
-    ESP_LOGI("EDER", "Error: %d", data.errorActive);
-    ESP_LOGI("EDER", "Refilling: %d", data.refillActive);
-    ESP_LOGI("EDER", "Pump active: %d", data.pump1Active);
-    ESP_LOGI("EDER", "Rapid degassing: %d", data.rapidDegassingActive);
-    ESP_LOGI("EDER", "Level: %d%%", data.level);
-    ESP_LOGI("EDER", "Pressure: %f bar", data.pressure / 100.);
-    ESP_LOGI("EDER", "Target pressure: %f - %f bar", data.targetPressureMin / 100., data.targetPressureMax / 100.);
-    ESP_LOGI("EDER", "Temperature: %f°C", data.temperature / 10.);
-    ESP_LOGI("EDER", "Level: %d%%", data.rpmPump1 / 100);
-    ESP_LOGI("EDER", "Pressure bottom: %dmBar", data.pressureBottom1);
-    ESP_LOGI("EDER", "Pressure top: %dmBar", data.pressureTop1);
-    ESP_LOGI("EDER", "Temperature PCB: %f°C", data.tempMulticontrolPcb / 100.);
-    ESP_LOGI("EDER", "Pump1 runtime: %lus", data.pump1Seconds);
-    ESP_LOGI("EDER", "Refill mode: %d", data.refillMode);
-    ESP_LOGI("EDER", "Degassing status: %d", data.degassingStatus);
-    ESP_LOGI("EDER", "Refill thresholds: %d .. %d%%", data.refillMinThreshold, data.refillMaxThreshold);
-    ESP_LOGI("EDER", "Refill total: %lul", data.refillTotal);
-    ESP_LOGI("EDER", "Refill rest: %dl", data.refillRest);
-    ESP_LOGI("EDER", "Degassing runtime: %lus", data.degassingSeconds);
+    ESP_LOGD("EDER", "Warning: %d", data.warningActive);
+    ESP_LOGD("EDER", "Error: %d", data.errorActive);
+    ESP_LOGD("EDER", "Refilling: %d", data.refillActive);
+    ESP_LOGD("EDER", "Pump active: %d", data.pump1Active);
+    ESP_LOGD("EDER", "Rapid degassing: %d", data.rapidDegassingActive);
+    ESP_LOGD("EDER", "Level: %d%%", data.level);
+    ESP_LOGD("EDER", "Pressure: %f bar", data.pressure / 100.);
+    ESP_LOGD("EDER", "Target pressure: %f - %f bar", data.targetPressureMin / 100., data.targetPressureMax / 100.);
+    ESP_LOGD("EDER", "Temperature: %f°C", data.temperature / 10.);
+    ESP_LOGD("EDER", "Level: %d%%", data.rpmPump1 / 100);
+    ESP_LOGD("EDER", "Pressure bottom: %dmBar", data.pressureBottom1);
+    ESP_LOGD("EDER", "Pressure top: %dmBar", data.pressureTop1);
+    ESP_LOGD("EDER", "Temperature PCB: %f°C", data.tempMulticontrolPcb / 100.);
+    ESP_LOGD("EDER", "Pump1 runtime: %lus", data.pump1Seconds);
+    ESP_LOGD("EDER", "Refill mode: %d", data.refillMode);
+    ESP_LOGD("EDER", "Degassing status: %d", data.degassingStatus);
+    ESP_LOGD("EDER", "Refill thresholds: %d .. %d%%", data.refillMinThreshold, data.refillMaxThreshold);
+    ESP_LOGD("EDER", "Refill total: %lul", data.refillTotal);
+    ESP_LOGD("EDER", "Refill rest: %dl", data.refillRest);
+    ESP_LOGD("EDER", "Degassing runtime: %lus", data.degassingSeconds);
   }
 };
